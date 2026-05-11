@@ -1,0 +1,67 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ExamPro Online | CBT Mock Test</title>
+  <link rel="stylesheet" href="{% static 'exams/css/style.css' %}">
+</head>
+<body class="exam-body">
+  <header class="nta-head">
+    <div class="brand-mark"><span></span><div><strong>NATIONAL TESTING AGENCY</strong><em>Excellence in Assessment</em></div></div>
+    <div class="candidate-card">
+      <div class="avatar"></div>
+      <p>Candidate Name : <b>{{ request.user.first_name|default:request.user.username }}</b></p>
+      <p>Subject Name : <b>{{ subject }}</b></p>
+      <p>Remaining Time : <b id="timer">00:00</b></p>
+    </div>
+  </header>
+  <nav class="subject-tabs">
+    <strong>CBT MOCK TEST</strong>
+    {% for item in subjects %}<button type="button" class="subject-jump" data-subject="{{ item|upper }}">{{ item|upper }}</button>{% endfor %}
+    <span class="download-paper">DOWNLOAD PAPER IN: <a href="{% url 'download_paper' %}">DOWNLOAD</a></span>
+    <label>Paper Language: <select><option>English</option></select></label>
+    <a class="exam-dashboard-link" href="{% url 'dashboard' %}">Dashboard</a>
+  </nav>
+  <main class="exam-layout">
+    <form id="examForm" method="post" action="{% url 'submit_exam' %}" class="question-area">
+      {% csrf_token %}
+      <input type="hidden" name="responses" id="responsesInput">
+      <h2>Question <span id="qNo">1</span> :</h2>
+      <article class="question-card">
+        <p id="qText"></p>
+        <div id="options" class="options"></div>
+      </article>
+      <div class="action-row">
+        <button type="button" class="green" id="saveNext">SAVE & NEXT</button>
+        <button type="button" class="orange" id="markReview">SAVE & MARK FOR REVIEW</button>
+        <button type="button" class="light" id="clearResponse">CLEAR RESPONSE</button>
+        <button type="button" class="blue" id="markOnly">MARK FOR REVIEW & NEXT</button>
+      </div>
+      <div class="bottom-row">
+        <button type="button" class="light" id="prevBtn">&lt;&lt; BACK</button>
+        <button type="button" class="light" id="nextBtn">NEXT &gt;&gt;</button>
+        <button type="submit" class="submit-btn">SUBMIT</button>
+      </div>
+    </form>
+    <aside class="palette-side">
+      <div class="legend">
+        <span><i class="box not-visited">0</i> Not Visited</span>
+        <span><i class="box not-answered">0</i> Not Answered</span>
+        <span><i class="box answered">0</i> Answered</span>
+        <span><i class="box review">0</i> Marked for Review</span>
+      </div>
+      <div class="palette-title">Question Palette</div>
+      <div id="palette" class="palette"></div>
+      <button form="examForm" class="submit-wide">Submit Test</button>
+    </aside>
+  </main>
+  {{ questions_json|json_script:"question-data" }}
+  <script>
+    window.EXAM_SECONDS = {{ remaining }};
+    window.SUBMIT_URL = "{% url 'submit_exam' %}";
+  </script>
+  <script src="{% static 'exams/js/exam.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ExamPro Online | Student Dashboard</title>
+  <link rel="stylesheet" href="{% static 'exams/css/style.css' %}">
+</head>
+<body class="student-body">
+  <nav class="dash-nav">
+    <b>ExamPro Online</b>
+    <span>Student Dashboard</span>
+    <a href="{% url 'logout' %}">{{ request.user.first_name|default:request.user.username }} | Logout</a>
+  </nav>
+  <main class="student-dashboard">
+    <section class="dash-hero">
+      <div>
+        <p class="eyebrow">Computer Based Test System</p>
+        <h1>Practice, attempt, review, and improve.</h1>
+        <p>Choose a subject test or take the full mock covering Physics, Chemistry, Mathematics, and Computer Science. Every attempt is stored with score, accuracy, time, topic performance, and answer review.</p>
+      </div>
+      <div class="hero-score">
+        <span>{{ total_attempts }}</span>
+        <small>Total Attempts</small>
+      </div>
+    </section>
+
+    <section class="metric-strip">
+      <div><span>Best Score</span><b>{{ best_score }}</b></div>
+      <div><span>Best Accuracy</span><b>{{ best_accuracy }}%</b></div>
+      <div><span>Average Accuracy</span><b>{{ avg_accuracy }}%</b></div>
+      <div><span>Timer Per Test</span><b>{{ duration }} min</b></div>
+    </section>
+
+    <h2>Start New Exam</h2>
+    <section class="exam-choice-grid">
+      {% for item in exam_cards %}
+        <article class="exam-choice">
+          <div>
+            <span>{{ item.subject }}</span>
+            <h3>{{ item.title }}</h3>
+            <p>{{ item.count }} questions with NTA-style palette, timer, marking, and instant evaluation.</p>
+          </div>
+          <a href="{% url 'start_exam' item.slug %}">Start Test</a>
+        </article>
+      {% endfor %}
+    </section>
+
+    <section class="history-panel">
+      <div class="section-title">
+        <h2>Attempt History</h2>
+        <p>Track repeated attempts and compare improvement over time.</p>
+      </div>
+      <div class="history-table">
+        <table>
+          <thead><tr><th>#</th><th>Exam</th><th>Score</th><th>Accuracy</th><th>Attempted</th><th>Time</th><th>Action</th></tr></thead>
+          <tbody>
+          {% for attempt in attempts %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td>{{ attempt.title }}</td>
+              <td>{{ attempt.score }} / {{ attempt.total_questions }}</td>
+              <td>{{ attempt.accuracy }}%</td>
+              <td>{{ attempt.attempted }}</td>
+              <td>{{ attempt.time_taken }} sec</td>
+              <td><a href="{% url 'result_detail' attempt.id %}">View Result</a></td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="7">No attempts yet. Start your first test above.</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,58 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ExamPro Online | Login & Signup</title>
+  <link rel="stylesheet" href="{% static 'exams/css/style.css' %}">
+</head>
+<body class="auth-body">
+  <main class="auth-shell {% if mode == 'login' %}login-mode{% endif %}">
+    <section class="auth-green">
+      <span class="shape diamond"></span>
+      <span class="shape circle"></span>
+      <span class="shape triangle"></span>
+      <h1>Welcome Back!</h1>
+      <p>ExamPro Online is a Django based mini project that simulates an NTA-style computer based test with authentication, timed MCQs, response tracking, auto evaluation, and a performance dashboard.</p>
+      <ul class="project-points">
+        <li>Built with Django, HTML, CSS, and JavaScript</li>
+        <li>Physics, Chemistry, Mathematics, and Computer Science question bank</li>
+        <li>Timer, review palette, score, accuracy, and answer review</li>
+      </ul>
+      <button type="button" class="outline-btn" id="showLogin">SIGN IN</button>
+    </section>
+    <section class="auth-white">
+      {% if messages %}
+        <div class="messages">{% for message in messages %}<p>{{ message }}</p>{% endfor %}</div>
+      {% endif %}
+      <form class="auth-form signup-form" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="signup">
+        <h2>Create Account</h2>
+        <div class="socials"><span>t</span><span>f</span><span>in</span></div>
+        <small>or use your email for registration</small>
+        <label><span>N</span><input name="name" placeholder="Name" required></label>
+        <label><span>@</span><input type="email" name="email" placeholder="Email" required></label>
+        <label><span>#</span><input type="password" name="password" placeholder="Password" required></label>
+        <button type="submit" class="primary-pill">SIGN UP</button>
+      </form>
+      <form class="auth-form login-form" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="login">
+        <h2>Sign In</h2>
+        <small>use your registered email account</small>
+        <label><span>@</span><input type="email" name="email" placeholder="Email" required></label>
+        <label><span>#</span><input type="password" name="password" placeholder="Password" required></label>
+        <button type="submit" class="primary-pill">SIGN IN</button>
+        <button type="button" class="link-btn" id="showSignup">Create a new account</button>
+      </form>
+    </section>
+  </main>
+  <script>
+    const shell = document.querySelector('.auth-shell');
+    document.getElementById('showLogin').onclick = () => shell.classList.add('login-mode');
+    document.getElementById('showSignup').onclick = () => shell.classList.remove('login-mode');
+  </script>
+</body>
+</html>

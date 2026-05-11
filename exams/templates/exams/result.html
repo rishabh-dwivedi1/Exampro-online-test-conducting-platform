@@ -1,0 +1,74 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ExamPro Online | Performance Dashboard</title>
+  <link rel="stylesheet" href="{% static 'exams/css/style.css' %}">
+</head>
+<body class="result-body">
+  <nav class="dash-nav"><b>ExamPro Online</b><span>Student Performance Dashboard</span><a href="{% url 'logout' %}">{{ request.user.first_name|default:request.user.username }} | Logout</a></nav>
+  <main class="dashboard">
+    <section class="congrats"><h1>CONGRATULATIONS, {{ request.user.first_name|default:request.user.username|upper }}!</h1><p>Your Exam has been Submitted Successfully.</p></section>
+    <h2>EXAM SUMMARY: {{ result.title }}</h2>
+    <div class="summary-grid">
+      <div><i>Q</i><span>Total Questions:</span><b>{{ result.total_questions }}</b></div>
+      <div><i>A</i><span>Attempted:</span><b>{{ result.attempted }}</b></div>
+      <div><i>S</i><span>Total Score:</span><b>{{ result.score }} / {{ result.total_questions }}</b></div>
+      <div><i>%</i><span>Accuracy:</span><b>{{ result.accuracy }}%</b></div>
+      <div><i>T</i><span>Total Time:</span><b>{{ time_text }}</b></div>
+      <div><i>OK</i><span>Status:</span><b class="passed">SUBMITTED</b></div>
+    </div>
+    <h2>DETAILED ANALYSIS & INSIGHTS</h2>
+    <section class="analysis-grid">
+      <div class="panel">
+        <h3>Your Performance Overview</h3>
+        <div class="gauge" style="--score: {{ result.accuracy }}%"><span>{{ result.accuracy }}%</span><small>Score: {{ result.score }}/{{ result.total_questions }}<br>OVERALL PERFORMANCE</small></div>
+        <div class="mini-stats"><b>Correct: {{ result.correct }}</b><b>Incorrect: {{ result.incorrect }}</b><b>Unattempted: {{ unattempted }}</b></div>
+      </div>
+      <div class="panel">
+        <h3>Topic-Wise Strength & Weakness</h3>
+        {% for t in topics %}
+          <div class="topic-row"><span>{{ t.name }}</span><div><i style="width:{{ t.percent }}%"></i></div><b>{{ t.percent }}%</b></div>
+        {% endfor %}
+      </div>
+    </section>
+    <h2>POST-EXAM ACTIONS</h2>
+    <section class="post-grid">
+      <a class="review-btn" href="#answers">Review Exam Answers<small>Review your question responses</small></a>
+      <div class="panel" id="answers">
+        <h3>View Detailed Question Breakdown</h3>
+        <table>
+          <thead><tr><th>Question #</th><th>Subject</th><th>Selected Option</th><th>Correct Option</th><th>Status</th></tr></thead>
+          <tbody>
+          {% for r in responses %}
+            <tr><td>{{ forloop.counter }}</td><td>{{ r.question.subject }}</td><td>{{ r.selected_answer|default:"-" }}</td><td>{{ r.question.correct_answer }}</td><td class="{% if r.is_correct %}ok{% else %}bad{% endif %}">{% if r.is_correct %}Correct{% else %}Wrong{% endif %}</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="panel action-panel">
+        <button>Access Resources & Study Material</button>
+        <a href="{% url 'dashboard' %}">Return to Dashboard</a>
+      </div>
+    </section>
+    <section class="history-panel compact-history">
+      <div class="section-title">
+        <h2>Recent Attempts</h2>
+        <p>Multiple attempts are saved separately for progress tracking.</p>
+      </div>
+      <div class="history-table">
+        <table>
+          <thead><tr><th>Exam</th><th>Score</th><th>Accuracy</th><th>Open</th></tr></thead>
+          <tbody>
+          {% for item in attempts %}
+            <tr><td>{{ item.title }}</td><td>{{ item.score }} / {{ item.total_questions }}</td><td>{{ item.accuracy }}%</td><td><a href="{% url 'result_detail' item.id %}">View</a></td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
